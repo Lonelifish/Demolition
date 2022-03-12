@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Map.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Map.java</span></div><h1>Map.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Map {
+	private int x;
+	private int y;
+	private PImage[] mapsprite;
+	private String[][] mapTable;
+	private String[] lines;
+/**
+* Default width.
+*/
+	public static final int WIDTH = 480;
+/**
+* Default height.
+*/
+    public static final int HEIGHT = 480;
+
+/**
+* Construct a map object.
+* @param mapsprite Array of PImage for map sprites - solid wall, broken, empty and goal.
+* @param lines String Array for lines read from the current level.
+*/
+<span class="fc" id="L26">	public Map(PImage[] mapsprite, String[] lines ){</span>
+<span class="fc" id="L27">		this.mapsprite = mapsprite;</span>
+<span class="fc" id="L28">		this.lines = lines;</span>
+<span class="fc" id="L29">		this.mapTable = new String[15][13];</span>
+<span class="fc" id="L30">	}</span>
+	
+/**
+* Put the lines in a 2D Array represeting a map table.
+*/
+	public void putTextinTable(){
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int h = 0; h &lt; lines.length; h ++) {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">            for (int w =0; w &lt; lines[h].length(); w ++){</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">                if (lines[h].charAt(w)=='W'){</span>
+<span class="fc" id="L39">                    this.mapTable[w][h] = &quot;W&quot;;</span>
+                }
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                else if (lines[h].charAt(w)=='G'){</span>
+<span class="fc" id="L42">                    this.mapTable[w][h] = &quot;G&quot;;</span>
+                }
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                else if (lines[h].charAt(w)=='B'){</span>
+<span class="fc" id="L45">                    this.mapTable[w][h] = &quot;B&quot;;</span>
+                }
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                else if (lines[h].charAt(w)=='R'){</span>
+<span class="fc" id="L48">                    this.mapTable[w][h] = &quot;R&quot;;</span>
+                }
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                else if (lines[h].charAt(w)=='P'){</span>
+<span class="fc" id="L51">                    this.mapTable[w][h] = &quot;P&quot;;</span>
+                }
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                else if (lines[h].charAt(w)=='Y'){</span>
+<span class="fc" id="L54">                    this.mapTable[w][h] = &quot;Y&quot;;</span>
+                }
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">                else if (lines[h].charAt(w)==' '){</span>
+<span class="fc" id="L57">                    this.mapTable[w][h] = &quot; &quot;;</span>
+                }
+               
+            }
+        }
+<span class="fc" id="L62">	}</span>
+/**
+* Draw the map.
+* @param app The main PApplet object.
+*/
+	public void draw(PApplet app) {
+		//handles graphics, should be a few lines
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (this.y = 0; this.y &lt; mapTable.length; this.y++){</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (this.x = 0; x &lt;mapTable[this.y].length; this.x++){</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				if (mapTable[this.y][this.x].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L72">					app.image(this.mapsprite[0], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+				}
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				else if (mapTable[this.y][this.x].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L75">					app.image(this.mapsprite[1], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+				}
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				else if (mapTable[this.y][this.x].equals(&quot;G&quot;)) {</span>
+<span class="fc" id="L78">					app.image(this.mapsprite[2], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+				}
+				else{
+<span class="fc" id="L81">					app.image(this.mapsprite[3], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+				}
+				
+			}
+		}
+<span class="fc" id="L86">   	}</span>
+/**
+* Returns a 2D String Array as the map table used in the main game function.
+* @return Returns a 2D String Array
+*/
+	public String[][] getMapTable() {
+<span class="fc" id="L92">		return this.mapTable;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

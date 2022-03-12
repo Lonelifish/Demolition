@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Explode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Explode.java</span></div><h1>Explode.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PImage;
+
+import java.util.ArrayList;
+
+
+import processing.core.PApplet; 
+
+public class Explode {
+	private int x;
+	private int y;
+
+	private String[][] mapTable;
+/**
+* Explode sprite
+*/
+	public PImage sprite;
+	private PImage[] explodes;
+	private PImage[] helpersprite;
+	private int initial;
+
+	ArrayList&lt;String&gt; explodespace; 
+
+	private ArrayList&lt;Integer&gt; listX;
+	private ArrayList&lt;Integer&gt; listY;
+/**
+* Default width
+*/
+	public static final int WIDTH = 480;
+/**
+* Default height
+*/
+    public static final int HEIGHT = 480;
+/**
+* Construct an Explode object.
+* @param mapTable 2D array for the map.
+* @param x Column number of the explosion.
+* @param y Row number of the explosion.
+* @param explodes Array of sprites for explosion.
+* @param initial Initial number used by tick() method, default value is zero.
+*/		
+<span class="fc" id="L43">	public Explode(String[][] mapTable, int x, int y, PImage[] explodes, int initial) {</span>
+<span class="fc" id="L44">		this.mapTable = mapTable;</span>
+<span class="fc" id="L45">		this.explodes = explodes;</span>
+<span class="fc" id="L46">		this.initial = initial;</span>
+<span class="fc" id="L47">		this.x = x;</span>
+<span class="fc" id="L48">		this.y = y;</span>
+<span class="fc" id="L49">		this.helpersprite = this.explodes;</span>
+<span class="fc" id="L50">		this.sprite = this.helpersprite[this.initial];</span>
+<span class="fc" id="L51">		this.explodespace = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L52">		this.listX = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L53">		this.listY = new ArrayList&lt;Integer&gt;();</span>
+
+<span class="fc" id="L55">	}</span>
+/**
+* Checks the explosion area by reading through the 2D Array of map.
+*/
+	public void checkExplodeSpace() {
+		//center
+<span class="fc" id="L61">		explodespace.add(&quot;C&quot;);</span>
+		//left
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (this.mapTable[this.y-1][this.x].equals(&quot;B&quot;)){</span>
+<span class="fc" id="L64">			explodespace.add(&quot;L1&quot;);</span>
+		}
+<span class="pc bpc" id="L66" title="1 of 6 branches missed.">		else if (!this.mapTable[this.y-1][this.x].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y-1][this.x].equals(&quot;W&quot;) &amp;&amp; !this.mapTable[this.y-2][this.x].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L67">			explodespace.add(&quot;L1&quot;);</span>
+<span class="fc" id="L68">			explodespace.add(&quot;L2&quot;);</span>
+		} 
+<span class="pc bpc" id="L70" title="2 of 6 branches missed.">		else if (!this.mapTable[this.y-1][this.x].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y-1][this.x].equals(&quot;W&quot;) &amp;&amp; this.mapTable[this.y-2][this.x].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L71">			explodespace.add(&quot;L1&quot;);</span>
+		}
+		//right
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (this.mapTable[this.y+1][this.x].equals(&quot;B&quot;)){</span>
+<span class="fc" id="L75">			explodespace.add(&quot;R1&quot;);</span>
+		}
+<span class="pc bpc" id="L77" title="1 of 6 branches missed.">		else if (!this.mapTable[this.y+1][this.x].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y+1][this.x].equals(&quot;W&quot;) &amp;&amp; !this.mapTable[this.y+2][this.x].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L78">			explodespace.add(&quot;R1&quot;);</span>
+<span class="fc" id="L79">			explodespace.add(&quot;R2&quot;);</span>
+		} 
+<span class="pc bpc" id="L81" title="2 of 6 branches missed.">		else if (!this.mapTable[this.y+1][this.x].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y+1][this.x].equals(&quot;W&quot;) &amp;&amp; this.mapTable[this.y+2][this.x].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L82">			explodespace.add(&quot;R1&quot;);</span>
+		} 
+		//up
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (this.mapTable[this.y][this.x-1].equals(&quot;B&quot;)){</span>
+<span class="fc" id="L86">			explodespace.add(&quot;U1&quot;);</span>
+		}
+<span class="pc bpc" id="L88" title="1 of 6 branches missed.">		else if (!this.mapTable[this.y][this.x-1].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y][this.x-1].equals(&quot;W&quot;) &amp;&amp; !this.mapTable[this.y][this.x-2].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L89">			explodespace.add(&quot;U1&quot;);</span>
+<span class="fc" id="L90">			explodespace.add(&quot;U2&quot;);</span>
+		} 
+<span class="pc bpc" id="L92" title="2 of 6 branches missed.">		else if (!this.mapTable[this.y][this.x-1].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y][this.x-1].equals(&quot;W&quot;) &amp;&amp; this.mapTable[this.y][this.x-2].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L93">			explodespace.add(&quot;U1&quot;);</span>
+		}
+		//down
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (this.mapTable[this.y][this.x+1].equals(&quot;B&quot;)){</span>
+<span class="fc" id="L97">			explodespace.add(&quot;D1&quot;);</span>
+		}
+<span class="pc bpc" id="L99" title="1 of 6 branches missed.">		else if (!this.mapTable[this.y][this.x+1].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y][this.x+1].equals(&quot;W&quot;) &amp;&amp; !this.mapTable[this.y][this.x+2].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L100">			explodespace.add(&quot;D1&quot;);</span>
+<span class="fc" id="L101">			explodespace.add(&quot;D2&quot;);</span>
+		} 
+<span class="pc bpc" id="L103" title="2 of 6 branches missed.">		else if (!this.mapTable[this.y][this.x+1].equals(&quot;B&quot;) &amp;&amp; !this.mapTable[this.y][this.x+1].equals(&quot;W&quot;) &amp;&amp; this.mapTable[this.y][this.x+2].equals(&quot;W&quot;)){</span>
+<span class="fc" id="L104">			explodespace.add(&quot;D1&quot;);</span>
+		} 
+<span class="fc" id="L106">	}</span>
+/**
+* Draws the explosion on map.
+* @param app the main PApplet object.
+*/
+	public void draw(PApplet app) {
+<span class="fc" id="L112">		app.image(this.explodes[0], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+		//left 1
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (String e : this.explodespace){</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			if (e.equals(&quot;C&quot;)){</span>
+<span class="fc" id="L116">				app.image(this.explodes[0], this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+			}
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (e.equals(&quot;L1&quot;)){</span>
+<span class="nc" id="L119">				app.image(this.explodes[5], (this.y-1)*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">				if (!this.mapTable[this.y-1][this.x].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L121">					this.mapTable[this.y-1][this.x] = &quot; &quot;;</span>
+				}
+			}
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			if (e.equals(&quot;L2&quot;)){</span>
+<span class="nc" id="L125">				app.image(this.explodes[2], (this.y-2)*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">				if (!this.mapTable[this.y-2][this.x].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L127">					this.mapTable[this.y-2][this.x] = &quot; &quot;;</span>
+				}
+			}
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (e.equals(&quot;R1&quot;)){</span>
+<span class="nc" id="L131">				app.image(this.explodes[5], (this.y+1)*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">				if (!this.mapTable[this.y+1][this.x].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L133">					this.mapTable[this.y+1][this.x] = &quot; &quot;;</span>
+				}
+			}
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">			if (e.equals(&quot;R2&quot;)){</span>
+<span class="nc" id="L137">				app.image(this.explodes[3], (this.y+2)*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">				if (!this.mapTable[this.y+2][this.x].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L139">					this.mapTable[this.y+2][this.x] = &quot; &quot;;</span>
+				}
+			}
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">			if (e.equals(&quot;U1&quot;)){</span>
+<span class="nc" id="L143">				app.image(this.explodes[6], this.y*(WIDTH/mapTable.length),(64+(this.x-1) *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">				if (!this.mapTable[this.y][this.x-1].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L145">					this.mapTable[this.y][this.x-1] = &quot; &quot;;</span>
+				}
+			}
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">			if (e.equals(&quot;U2&quot;)){</span>
+<span class="nc" id="L149">				app.image(this.explodes[4], this.y*(WIDTH/mapTable.length),(64+(this.x-2) *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">				if (!this.mapTable[this.y][this.x-2].equals(&quot;G&quot;)){</span>
+<span class="nc" id="L151">					this.mapTable[this.y][this.x-2] = &quot; &quot;;</span>
+				}
+			}
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			if (e.equals(&quot;D1&quot;)){</span>
+<span class="fc" id="L155">				app.image(this.explodes[6], this.y*(WIDTH/mapTable.length),(64+(this.x+1) *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">				if (!this.mapTable[this.y][this.x+1].equals(&quot;G&quot;)){</span>
+<span class="fc" id="L157">					this.mapTable[this.y][this.x+1] = &quot; &quot;;</span>
+				}
+			}
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			if (e.equals(&quot;D2&quot;)){</span>
+<span class="fc" id="L161">				app.image(this.explodes[1], this.y*(WIDTH/mapTable.length),(64+(this.x+2) *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">				if (!this.mapTable[this.y][this.x+2].equals(&quot;G&quot;)){</span>
+<span class="fc" id="L163">					this.mapTable[this.y][this.x+2] = &quot; &quot;;</span>
+				}
+			}
+<span class="fc" id="L166">		}</span>
+<span class="fc" id="L167">   	}</span>
+/**
+* Puts the explosion covered coordinates in two separate Arrays, one for y(row) and one for x(column).
+*/	
+	public void getExplodeCoord(){
+
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (String e : this.explodespace){</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (e.equals(&quot;L1&quot;)){</span>
+<span class="fc" id="L175">				this.listY.add(y-1);</span>
+<span class="fc" id="L176">				this.listX.add(x);</span>
+			}
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (e.equals(&quot;L2&quot;)){</span>
+<span class="fc" id="L179">				this.listY.add(y-2);</span>
+<span class="fc" id="L180">				this.listX.add(x);</span>
+			}
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			if (e.equals(&quot;R1&quot;)){</span>
+<span class="fc" id="L183">				this.listY.add(y+1);</span>
+<span class="fc" id="L184">				this.listX.add(x);</span>
+			}
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (e.equals(&quot;R2&quot;)){</span>
+<span class="fc" id="L187">				this.listY.add(y+2);</span>
+<span class="fc" id="L188">				this.listX.add(x);</span>
+			}
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (e.equals(&quot;U1&quot;)){</span>
+<span class="fc" id="L191">				this.listY.add(y);</span>
+<span class="fc" id="L192">				this.listX.add(x-1);</span>
+			}
+<span class="fc bfc" id="L194" title="All 2 branches covered.">			if (e.equals(&quot;U2&quot;)){</span>
+<span class="fc" id="L195">				this.listY.add(y);</span>
+<span class="fc" id="L196">				this.listX.add(x-2);</span>
+			}
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			if (e.equals(&quot;D1&quot;)){</span>
+<span class="fc" id="L199">				this.listY.add(y);</span>
+<span class="fc" id="L200">				this.listX.add(x+1);</span>
+			}
+<span class="fc bfc" id="L202" title="All 2 branches covered.">			if (e.equals(&quot;D2&quot;)){</span>
+<span class="fc" id="L203">				this.listY.add(y);</span>
+<span class="fc" id="L204">				this.listX.add(x+2);</span>
+			}
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			if (e.equals(&quot;C&quot;)){</span>
+<span class="fc" id="L207">				this.listY.add(y);</span>
+<span class="fc" id="L208">				this.listX.add(x);</span>
+			}
+<span class="fc" id="L210">		}</span>
+<span class="fc" id="L211">	}</span>
+/**
+* Gets the explosion Array of row numbers
+*@return returns an Array of Integers for explosion row
+*/
+	public ArrayList&lt;Integer&gt; getXlist(){
+<span class="fc" id="L217">		return this.listX;</span>
+	}
+/**
+* Gets the explosion Array of column numbers
+*@return returns an Array of Integers for explosion column
+*/
+	public ArrayList&lt;Integer&gt; getYlist(){
+<span class="fc" id="L224">		return this.listY;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

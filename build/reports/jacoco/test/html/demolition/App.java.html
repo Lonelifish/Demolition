@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package demolition;
+
+import java.util.ArrayList;
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PImage;
+import processing.data.JSONArray;
+
+
+public class App extends PApplet {
+/**
+* Default width of the game window
+*/
+    public static final int WIDTH = 480;
+/**
+* Default height of the game window
+*/
+    public static final int HEIGHT = 480;
+/**
+* Default FPS of the game
+*/
+    public static final int FPS = 60;
+/**
+* keyCode for UP
+*/
+    public static final int UP = 38;
+/**
+* keyCode for DOWN
+*/
+    public static final int DOWN = 40;
+    /**
+* keyCode for LEFT
+*/
+    public static final int LEFT = 37;
+/**
+* keyCode for RIGHT
+*/
+    public static final int RIGHT = 39;
+    /**
+* keyCode for SPACE
+*/
+    public static final int SPACE = 32;
+    Player player;
+    Clock clock;
+    private Playerlife playerlife;
+    private Map map;
+    private int x;
+    private int y;
+    int lifecount;
+    private ArrayList&lt;Bomb&gt; bomb_list;
+    ArrayList&lt;Explode&gt; explode_list;
+    ArrayList&lt;Red_Enemy&gt; red_Enemies;
+    ArrayList&lt;Yellow_Enemy&gt; yellow_Enemies;
+    private ArrayList&lt;Integer&gt; bomb_timing;
+    private ArrayList&lt;Integer&gt; exp_timing;
+<span class="fc" id="L56">    String[][] mapTable = new String[15][13];</span>
+    private String[] map_lines;
+    private PImage[] mapsprite;
+    private PImage[] leftsprite; 
+    private PImage[] downsprite;
+    private PImage[] rightsprite; 
+    private PImage[] upsprite;
+    private PImage[] red_leftsprite; 
+    private PImage[] red_downsprite;
+    private PImage[] red_rightsprite; 
+    private PImage[] red_upsprite;
+    private PImage[] yellow_leftsprite; 
+    private PImage[] yellow_downsprite;
+    private PImage[] yellow_rightsprite; 
+    private PImage[] yellow_upsprite;
+    private PImage[] bombs;
+    PImage[] explodes;
+    private int secondslevel;
+    JSONArray jsonarray;
+    int whichlevel;
+    int initial;
+    int levels;
+
+    private PFont int_font;
+
+    /**
+* Construct Objects used in game
+*/
+<span class="fc" id="L84">    public App() {</span>
+<span class="fc" id="L85">        this.bomb_list = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc" id="L86">        this.explode_list = new ArrayList&lt;Explode&gt;();</span>
+<span class="fc" id="L87">        this.red_Enemies = new ArrayList&lt;Red_Enemy&gt;();</span>
+<span class="fc" id="L88">        this.yellow_Enemies = new ArrayList&lt;Yellow_Enemy&gt;();</span>
+<span class="fc" id="L89">        this.bomb_timing = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L90">        this.exp_timing = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L91">        this.mapsprite = new PImage[4];</span>
+<span class="fc" id="L92">        this.leftsprite = new PImage[6]; </span>
+<span class="fc" id="L93">        this.rightsprite = new PImage[6]; </span>
+<span class="fc" id="L94">        this.downsprite = new PImage[6]; </span>
+<span class="fc" id="L95">        this.upsprite = new PImage[6]; </span>
+<span class="fc" id="L96">        this.red_leftsprite = new PImage[6]; </span>
+<span class="fc" id="L97">        this.red_rightsprite = new PImage[6]; </span>
+<span class="fc" id="L98">        this.red_downsprite = new PImage[6]; </span>
+<span class="fc" id="L99">        this.red_upsprite = new PImage[6]; </span>
+<span class="fc" id="L100">        this.yellow_leftsprite = new PImage[6]; </span>
+<span class="fc" id="L101">        this.yellow_rightsprite = new PImage[6]; </span>
+<span class="fc" id="L102">        this.yellow_downsprite = new PImage[6]; </span>
+<span class="fc" id="L103">        this.yellow_upsprite = new PImage[6]; </span>
+<span class="fc" id="L104">        this.bombs = new PImage[8];</span>
+<span class="fc" id="L105">        this.explodes = new PImage[7];</span>
+<span class="fc" id="L106">    }</span>
+   /**
+* Set game width and height, Load sprites and call setConfig()
+*/
+    public void settings() {
+<span class="fc" id="L111">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L112">        this.lifecount = loadJSONObject(&quot;config.json&quot;).getInt(&quot;lives&quot;);</span>
+        //map images
+<span class="fc" id="L114">        this.mapsprite[0] = this.loadImage(&quot;src/main/resources/wall/solid.png&quot;);</span>
+<span class="fc" id="L115">        this.mapsprite[1] = this.loadImage(&quot;src/main/resources/broken/broken.png&quot;);</span>
+<span class="fc" id="L116">        this.mapsprite[2] = this.loadImage(&quot;src/main/resources/goal/goal.png&quot;);</span>
+<span class="fc" id="L117">        this.mapsprite[3] = this.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+        //player images
+<span class="fc" id="L119">        this.leftsprite[0] = this.loadImage(&quot;src/main/resources/player/player_left1.png&quot;);</span>
+<span class="fc" id="L120">        this.leftsprite[1] = this.loadImage(&quot;src/main/resources/player/player_left2.png&quot;);</span>
+<span class="fc" id="L121">        this.leftsprite[2] = this.loadImage(&quot;src/main/resources/player/player_left3.png&quot;);</span>
+<span class="fc" id="L122">        this.leftsprite[3] = this.loadImage(&quot;src/main/resources/player/player_left4.png&quot;);</span>
+<span class="fc" id="L123">        this.leftsprite[4] = this.loadImage(&quot;src/main/resources/player/player_left3.png&quot;);</span>
+<span class="fc" id="L124">        this.leftsprite[5] = this.loadImage(&quot;src/main/resources/player/player_left2.png&quot;);</span>
+<span class="fc" id="L125">        this.rightsprite[0] = this.loadImage(&quot;src/main/resources/player/player_right1.png&quot;);</span>
+<span class="fc" id="L126">        this.rightsprite[1] = this.loadImage(&quot;src/main/resources/player/player_right2.png&quot;);</span>
+<span class="fc" id="L127">        this.rightsprite[2] = this.loadImage(&quot;src/main/resources/player/player_right3.png&quot;);</span>
+<span class="fc" id="L128">        this.rightsprite[3] = this.loadImage(&quot;src/main/resources/player/player_right4.png&quot;);</span>
+<span class="fc" id="L129">        this.rightsprite[4] = this.loadImage(&quot;src/main/resources/player/player_right3.png&quot;);</span>
+<span class="fc" id="L130">        this.rightsprite[5] = this.loadImage(&quot;src/main/resources/player/player_right2.png&quot;);</span>
+<span class="fc" id="L131">        this.upsprite[0] = this.loadImage(&quot;src/main/resources/player/player_up1.png&quot;);</span>
+<span class="fc" id="L132">        this.upsprite[1] = this.loadImage(&quot;src/main/resources/player/player_up2.png&quot;);</span>
+<span class="fc" id="L133">        this.upsprite[2] = this.loadImage(&quot;src/main/resources/player/player_up3.png&quot;);</span>
+<span class="fc" id="L134">        this.upsprite[3] = this.loadImage(&quot;src/main/resources/player/player_up4.png&quot;);</span>
+<span class="fc" id="L135">        this.upsprite[4] = this.loadImage(&quot;src/main/resources/player/player_up3.png&quot;);</span>
+<span class="fc" id="L136">        this.upsprite[5] = this.loadImage(&quot;src/main/resources/player/player_up2.png&quot;);</span>
+<span class="fc" id="L137">        this.downsprite[0] = this.loadImage(&quot;src/main/resources/player/player1.png&quot;);</span>
+<span class="fc" id="L138">        this.downsprite[1] = this.loadImage(&quot;src/main/resources/player/player2.png&quot;);</span>
+<span class="fc" id="L139">        this.downsprite[2] = this.loadImage(&quot;src/main/resources/player/player3.png&quot;);</span>
+<span class="fc" id="L140">        this.downsprite[3] = this.loadImage(&quot;src/main/resources/player/player4.png&quot;);</span>
+<span class="fc" id="L141">        this.downsprite[4] = this.loadImage(&quot;src/main/resources/player/player3.png&quot;);</span>
+<span class="fc" id="L142">        this.downsprite[5] = this.loadImage(&quot;src/main/resources/player/player2.png&quot;);</span>
+        //load red enemy images
+<span class="fc" id="L144">        this.red_leftsprite[0] = this.loadImage(&quot;src/main/resources/red_enemy/red_left1.png&quot;);</span>
+<span class="fc" id="L145">        this.red_leftsprite[1] = this.loadImage(&quot;src/main/resources/red_enemy/red_left2.png&quot;);</span>
+<span class="fc" id="L146">        this.red_leftsprite[2] = this.loadImage(&quot;src/main/resources/red_enemy/red_left3.png&quot;);</span>
+<span class="fc" id="L147">        this.red_leftsprite[3] = this.loadImage(&quot;src/main/resources/red_enemy/red_left4.png&quot;);</span>
+<span class="fc" id="L148">        this.red_leftsprite[4] = this.loadImage(&quot;src/main/resources/red_enemy/red_left3.png&quot;);</span>
+<span class="fc" id="L149">        this.red_leftsprite[5] = this.loadImage(&quot;src/main/resources/red_enemy/red_left2.png&quot;);</span>
+<span class="fc" id="L150">        this.red_rightsprite[0] = this.loadImage(&quot;src/main/resources/red_enemy/red_right1.png&quot;);</span>
+<span class="fc" id="L151">        this.red_rightsprite[1] = this.loadImage(&quot;src/main/resources/red_enemy/red_right2.png&quot;);</span>
+<span class="fc" id="L152">        this.red_rightsprite[2] = this.loadImage(&quot;src/main/resources/red_enemy/red_right3.png&quot;);</span>
+<span class="fc" id="L153">        this.red_rightsprite[3] = this.loadImage(&quot;src/main/resources/red_enemy/red_right4.png&quot;);</span>
+<span class="fc" id="L154">        this.red_rightsprite[4] = this.loadImage(&quot;src/main/resources/red_enemy/red_right3.png&quot;);</span>
+<span class="fc" id="L155">        this.red_rightsprite[5] = this.loadImage(&quot;src/main/resources/red_enemy/red_right2.png&quot;);</span>
+<span class="fc" id="L156">        this.red_upsprite[0] = this.loadImage(&quot;src/main/resources/red_enemy/red_up1.png&quot;);</span>
+<span class="fc" id="L157">        this.red_upsprite[1] = this.loadImage(&quot;src/main/resources/red_enemy/red_up2.png&quot;);</span>
+<span class="fc" id="L158">        this.red_upsprite[2] = this.loadImage(&quot;src/main/resources/red_enemy/red_up3.png&quot;);</span>
+<span class="fc" id="L159">        this.red_upsprite[3] = this.loadImage(&quot;src/main/resources/red_enemy/red_up4.png&quot;);</span>
+<span class="fc" id="L160">        this.red_upsprite[4] = this.loadImage(&quot;src/main/resources/red_enemy/red_up3.png&quot;);</span>
+<span class="fc" id="L161">        this.red_upsprite[5] = this.loadImage(&quot;src/main/resources/red_enemy/red_up2.png&quot;);</span>
+<span class="fc" id="L162">        this.red_downsprite[0] = this.loadImage(&quot;src/main/resources/red_enemy/red_down1.png&quot;);</span>
+<span class="fc" id="L163">        this.red_downsprite[1] = this.loadImage(&quot;src/main/resources/red_enemy/red_down2.png&quot;);</span>
+<span class="fc" id="L164">        this.red_downsprite[2] = this.loadImage(&quot;src/main/resources/red_enemy/red_down3.png&quot;);</span>
+<span class="fc" id="L165">        this.red_downsprite[3] = this.loadImage(&quot;src/main/resources/red_enemy/red_down4.png&quot;);</span>
+<span class="fc" id="L166">        this.red_downsprite[4] = this.loadImage(&quot;src/main/resources/red_enemy/red_down3.png&quot;);</span>
+<span class="fc" id="L167">        this.red_downsprite[5] = this.loadImage(&quot;src/main/resources/red_enemy/red_down2.png&quot;);</span>
+        //load yellow enemy images
+<span class="fc" id="L169">        this.yellow_leftsprite[0] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left1.png&quot;);</span>
+<span class="fc" id="L170">        this.yellow_leftsprite[1] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left2.png&quot;);</span>
+<span class="fc" id="L171">        this.yellow_leftsprite[2] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left3.png&quot;);</span>
+<span class="fc" id="L172">        this.yellow_leftsprite[3] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left4.png&quot;);</span>
+<span class="fc" id="L173">        this.yellow_leftsprite[4] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left3.png&quot;);</span>
+<span class="fc" id="L174">        this.yellow_leftsprite[5] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left2.png&quot;);</span>
+<span class="fc" id="L175">        this.yellow_rightsprite[0] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right1.png&quot;);</span>
+<span class="fc" id="L176">        this.yellow_rightsprite[1] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right2.png&quot;);</span>
+<span class="fc" id="L177">        this.yellow_rightsprite[2] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right3.png&quot;);</span>
+<span class="fc" id="L178">        this.yellow_rightsprite[3] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right4.png&quot;);</span>
+<span class="fc" id="L179">        this.yellow_rightsprite[4] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right3.png&quot;);</span>
+<span class="fc" id="L180">        this.yellow_rightsprite[5] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right2.png&quot;);</span>
+<span class="fc" id="L181">        this.yellow_upsprite[0] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up1.png&quot;);</span>
+<span class="fc" id="L182">        this.yellow_upsprite[1] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up2.png&quot;);</span>
+<span class="fc" id="L183">        this.yellow_upsprite[2] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up3.png&quot;);</span>
+<span class="fc" id="L184">        this.yellow_upsprite[3] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up4.png&quot;);</span>
+<span class="fc" id="L185">        this.yellow_upsprite[4] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up3.png&quot;);</span>
+<span class="fc" id="L186">        this.yellow_upsprite[5] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up2.png&quot;);</span>
+<span class="fc" id="L187">        this.yellow_downsprite[0] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down1.png&quot;);</span>
+<span class="fc" id="L188">        this.yellow_downsprite[1] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down2.png&quot;);</span>
+<span class="fc" id="L189">        this.yellow_downsprite[2] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down3.png&quot;);</span>
+<span class="fc" id="L190">        this.yellow_downsprite[3] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down4.png&quot;);</span>
+<span class="fc" id="L191">        this.yellow_downsprite[4] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down3.png&quot;);</span>
+<span class="fc" id="L192">        this.yellow_downsprite[5] = this.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down2.png&quot;);</span>
+        //load bomb images
+<span class="fc" id="L194">        this.bombs[0] = this.loadImage(&quot;src/main/resources/Bomb/bomb1.png&quot;);</span>
+<span class="fc" id="L195">        this.bombs[1] = this.loadImage(&quot;src/main/resources/Bomb/bomb2.png&quot;);</span>
+<span class="fc" id="L196">        this.bombs[2] = this.loadImage(&quot;src/main/resources/Bomb/bomb3.png&quot;);</span>
+<span class="fc" id="L197">        this.bombs[3] = this.loadImage(&quot;src/main/resources/Bomb/bomb4.png&quot;);</span>
+<span class="fc" id="L198">        this.bombs[4] = this.loadImage(&quot;src/main/resources/Bomb/bomb5.png&quot;);</span>
+<span class="fc" id="L199">        this.bombs[5] = this.loadImage(&quot;src/main/resources/Bomb/bomb6.png&quot;);</span>
+<span class="fc" id="L200">        this.bombs[6] = this.loadImage(&quot;src/main/resources/Bomb/bomb7.png&quot;);</span>
+<span class="fc" id="L201">        this.bombs[7] = this.loadImage(&quot;src/main/resources/Bomb/bomb8.png&quot;);</span>
+        //load explode images
+<span class="fc" id="L203">        this.explodes[0] = this.loadImage(&quot;src/main/resources/explosion/centre.png&quot;);</span>
+<span class="fc" id="L204">        this.explodes[1] = this.loadImage(&quot;src/main/resources/explosion/end_bottom.png&quot;);</span>
+<span class="fc" id="L205">        this.explodes[2] = this.loadImage(&quot;src/main/resources/explosion/end_left.png&quot;);</span>
+<span class="fc" id="L206">        this.explodes[3] = this.loadImage(&quot;src/main/resources/explosion/end_right.png&quot;);</span>
+<span class="fc" id="L207">        this.explodes[4] = this.loadImage(&quot;src/main/resources/explosion/end_top.png&quot;);</span>
+<span class="fc" id="L208">        this.explodes[5] = this.loadImage(&quot;src/main/resources/explosion/horizontal.png&quot;);</span>
+<span class="fc" id="L209">        this.explodes[6] = this.loadImage(&quot;src/main/resources/explosion/vertical.png&quot;);</span>
+
+<span class="fc" id="L211">        setConfig(&quot;config.json&quot;);</span>
+
+<span class="fc" id="L213">    }</span>
+/**
+* Load config.json, put JSONArray and amount of levels in app.
+* @param filename configuration json file path.
+*/
+    public void setConfig(String filename){
+<span class="fc" id="L219">        this.jsonarray = loadJSONObject(filename).getJSONArray(&quot;levels&quot;);</span>
+<span class="fc" id="L220">        this.levels = loadJSONObject(filename).getJSONArray(&quot;levels&quot;).size();</span>
+<span class="fc" id="L221">    }</span>
+    
+   /**
+* Setup frameRate, load game configuration data from config.json, load font for numerical objects in the game, put data in mapTable and setup the initial map to draw
+*/
+    public void setup() {
+        //set fps
+<span class="fc" id="L228">        frameRate(FPS);</span>
+        //read map and put in a table
+<span class="fc" id="L230">        String pathlevel = this.jsonarray.getJSONObject(this.whichlevel).getString(&quot;path&quot;);</span>
+<span class="fc" id="L231">        this.map_lines = loadStrings(pathlevel);</span>
+<span class="fc" id="L232">        this.map = new Map(this.mapsprite,map_lines);</span>
+<span class="fc" id="L233">        this.map.putTextinTable();</span>
+<span class="fc" id="L234">        this.mapTable = this.map.getMapTable();</span>
+
+        //load player pos
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        for (int i= 0; i &lt; this.mapTable.length; i++){</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">			for (int k = 0; k &lt; this.mapTable[i].length; k++){</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (this.mapTable[i][k].equals(&quot;P&quot;)){</span>
+<span class="fc" id="L240">					this.y = i;</span>
+<span class="fc" id="L241">					this.x = k;</span>
+<span class="fc" id="L242">                    this.player = new Player(this.mapTable,this.x,this.y, this.downsprite, this.upsprite,this.rightsprite,this.leftsprite,this.initial);</span>
+                }
+            }
+        }
+        //load Red enemy pos
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (int i= 0; i &lt; this.mapTable.length; i++){</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">			for (int k = 0; k &lt; this.mapTable[i].length; k++){</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				if (this.mapTable[i][k].equals(&quot;R&quot;)){</span>
+<span class="fc" id="L250">					this.y = i;</span>
+<span class="fc" id="L251">					this.x = k;</span>
+<span class="fc" id="L252">                    this.red_Enemies.add(new Red_Enemy(this.mapTable,this.x,this.y, this.red_downsprite, this.red_upsprite, this.red_rightsprite, this.red_leftsprite,this.initial));</span>
+                }
+            }
+        }
+        //load yellow enemy pos
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (int i= 0; i &lt; this.mapTable.length; i++){</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			for (int k = 0; k &lt; this.mapTable[i].length; k++){</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">				if (this.mapTable[i][k].equals(&quot;Y&quot;)){</span>
+<span class="fc" id="L260">					this.y = i;</span>
+<span class="fc" id="L261">					this.x = k;</span>
+<span class="fc" id="L262">                    this.yellow_Enemies.add(new Yellow_Enemy(this.mapTable,this.x,this.y, this.yellow_downsprite, this.yellow_upsprite, this.yellow_rightsprite, this.yellow_leftsprite,this.initial));</span>
+                }
+            }
+        }
+        //load level time
+<span class="fc" id="L267">        secondslevel = loadJSONObject(&quot;config.json&quot;).getJSONArray(&quot;levels&quot;).getJSONObject(whichlevel).getInt(&quot;time&quot;);</span>
+        //load font
+<span class="fc" id="L269">        int_font = createFont(&quot;src/main/resources/PressStart2P-Regular.ttf&quot;,17);</span>
+        //load lives
+<span class="fc" id="L271">        this.playerlife = new Playerlife(WIDTH*4/15,16,this.loadImage(&quot;src/main/resources/icons/player.png&quot;),int_font, lifecount);</span>
+<span class="fc" id="L272">        this.clock = new Clock(WIDTH*8/15,16,this.loadImage(&quot;src/main/resources/icons/clock.png&quot;),int_font, secondslevel);</span>
+       
+        
+<span class="fc" id="L275">    }</span>
+    // 
+       /**
+* draws all game objects, loop till game over or player win
+*/
+    public void draw() {
+        //draw background
+<span class="fc" id="L282">        background(255, 165, 0);</span>
+        //fill black on font
+<span class="fc" id="L284">        fill(0);</span>
+<span class="fc" id="L285">        this.playerlife.draw(this);</span>
+        //clock ticks per 60 frames
+<span class="pc bpc" id="L287" title="2 of 6 branches missed.">        if (frameCount != 0 &amp;&amp; frameCount%60 == 0 &amp;&amp; frameCount/60 &lt;= secondslevel){</span>
+<span class="fc" id="L288">            this.clock.tick();</span>
+        }
+        //draw clock sprite
+<span class="fc" id="L291">        this.clock.draw(this);</span>
+        //draw map
+<span class="fc" id="L293">        this.map.draw(this);</span>
+        //Game object animation
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (frameCount%12 == 0){</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">            for (Red_Enemy red : this.red_Enemies){</span>
+<span class="fc" id="L297">                red.tick();</span>
+<span class="fc" id="L298">            }</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            for (Yellow_Enemy yellow : this.yellow_Enemies){</span>
+<span class="fc" id="L300">                yellow.tick();</span>
+<span class="fc" id="L301">            }</span>
+<span class="fc" id="L302">            this.player.tick(); </span>
+        }
+        //Bomb animation
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        for (Bomb bomb : this.bomb_list){</span>
+<span class="pc bpc" id="L306" title="1 of 4 branches missed.">            if (frameCount &gt; 0 &amp;&amp; (frameCount)%15 == 0){</span>
+<span class="fc" id="L307">                bomb.tick();</span>
+            }
+<span class="fc" id="L309">        }</span>
+        //enemy move
+<span class="fc bfc" id="L311" title="All 2 branches covered.">        if (frameCount%60 == 0 ){</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">            for (Red_Enemy red : this.red_Enemies){</span>
+<span class="fc" id="L313">                red.dir_check();</span>
+<span class="fc" id="L314">            }</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            for (Yellow_Enemy yellow : this.yellow_Enemies){</span>
+<span class="fc" id="L316">                yellow.dir_check();</span>
+<span class="fc" id="L317">            }</span>
+        }
+        //draw bombs
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (Bomb bomb : this.bomb_list){</span>
+<span class="fc" id="L321">            bomb.draw(this);</span>
+<span class="fc" id="L322">        }</span>
+        //remove bombs after two seconds
+<span class="fc bfc" id="L324" title="All 2 branches covered.">        if (this.bomb_list.size()&gt;0){</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">            if (frameCount - this.bomb_timing.get(0) == 120){</span>
+<span class="fc" id="L326">                this.bomb_list.remove(0);</span>
+<span class="fc" id="L327">                this.bomb_timing.remove(0);</span>
+                
+            }
+        }
+        //remove explode after 0.5 seconds
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        if (this.explode_list.size()&gt;0){</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">            if (frameCount - this.exp_timing.get(0) == 30){</span>
+<span class="fc" id="L334">                this.explode_list.remove(0);</span>
+<span class="fc" id="L335">                this.exp_timing.remove(0);</span>
+            }
+        }
+        //kill enemy
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        if (this.explode_list.size()&gt;0){</span>
+<span class="fc bfc" id="L340" title="All 4 branches covered.">            if (frameCount &gt; this.exp_timing.get(0) &amp;&amp; frameCount &lt; this.exp_timing.get(0) + 30){   </span>
+<span class="fc" id="L341">                this.explode_list.get(0).draw(this);</span>
+<span class="fc" id="L342">                this.explode_list.get(0).getExplodeCoord();</span>
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">                if (this.explode_list.get(0).getYlist().size()&gt;0){</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">                    for (int i = 0; i &lt; this.explode_list.get(0).getYlist().size();i++){</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">                        if (this.red_Enemies.size()&gt;0){</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">                            for (int r = 0; r &lt;this.red_Enemies.size();r ++){</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">                                if (this.explode_list.get(0).getYlist().get(i) == this.red_Enemies.get(r).getY()</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">                                &amp;&amp; this.explode_list.get(0).getXlist().get(i) == this.red_Enemies.get(r).getX()){</span>
+<span class="nc" id="L349">                                    this.red_Enemies.remove(r);</span>
+<span class="nc" id="L350">                                    r--;</span>
+                                }
+                            }
+                        }
+                    }
+                } 
+
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">                if (this.explode_list.get(0).getYlist().size()&gt;0){</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">                    for (int i = 0; i &lt; this.explode_list.get(0).getYlist().size();i++){</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">                        if (this.yellow_Enemies.size()&gt;0){</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">                            for (int r = 0; r &lt;this.yellow_Enemies.size();r ++){</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">                                if (this.explode_list.get(0).getYlist().get(i) == this.yellow_Enemies.get(r).getY()</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">                                &amp;&amp; this.explode_list.get(0).getXlist().get(i) == this.yellow_Enemies.get(r).getX()){</span>
+<span class="nc" id="L363">                                    this.yellow_Enemies.remove(r);</span>
+<span class="nc" id="L364">                                    r--;</span>
+                                }
+                            }
+                        }
+                    }
+                } 
+            }   
+        }
+        //kill player
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        if (this.explode_list.size()&gt;0){</span>
+<span class="fc bfc" id="L374" title="All 4 branches covered.">            if (frameCount &gt; this.exp_timing.get(0) &amp;&amp; frameCount &lt; this.exp_timing.get(0) + 30){   </span>
+                //this.explode_list.get(0).draw(this);
+<span class="fc" id="L376">                this.explode_list.get(0).getExplodeCoord();</span>
+<span class="fc" id="L377">                boolean player_dead = false;</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">                if (this.explode_list.get(0).getYlist().size()&gt;0){</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">                    for (int i = 0; i &lt; this.explode_list.get(0).getYlist().size();i++){</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">                        if (this.explode_list.get(0).getYlist().get(i) == this.player.getY()</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                        &amp;&amp; this.explode_list.get(0).getXlist().get(i) == this.player.getX()){</span>
+<span class="nc" id="L382">                            player_dead = true;</span>
+                        }
+                    }
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">                    if (player_dead == true){</span>
+<span class="nc" id="L386">                        clearMap();</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">                        if (this.lifecount &gt; 0){</span>
+<span class="nc" id="L388">                            this.lifecount -= 1;</span>
+<span class="nc" id="L389">                            setup();</span>
+                        }
+                    }
+                }  
+            }
+        }
+        
+        
+        //draw red enemies
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (Red_Enemy red : this.red_Enemies){</span>
+<span class="fc" id="L399">            red.draw(this);</span>
+<span class="fc" id="L400">        }</span>
+        //draw yellow enemies
+<span class="fc bfc" id="L402" title="All 2 branches covered.">        for (Yellow_Enemy yellow : this.yellow_Enemies){</span>
+<span class="fc" id="L403">            yellow.draw(this);</span>
+<span class="fc" id="L404">        }</span>
+        //enemy kills player
+<span class="pc bpc" id="L406" title="1 of 2 branches missed.">        if (this.yellow_Enemies.size()&gt;0){</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">            for (int r = 0; r &lt;this.yellow_Enemies.size();r ++){</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">                if (this.player.getX()==this.yellow_Enemies.get(r).getX()</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">                &amp;&amp; this.player.getY()==this.yellow_Enemies.get(r).getY()){</span>
+<span class="fc" id="L410">                    r--;</span>
+<span class="fc" id="L411">                    this.lifecount -= 1;</span>
+<span class="fc" id="L412">                    clearMap();</span>
+<span class="fc" id="L413">                    setup();</span>
+                }
+            } 
+        }
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">        if (this.red_Enemies.size()&gt;0){</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">            for (int r = 0; r &lt;this.red_Enemies.size();r ++){</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">                if (this.player.getX()==this.red_Enemies.get(r).getX()</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">                &amp;&amp; this.player.getY()==this.red_Enemies.get(r).getY()){</span>
+<span class="nc" id="L421">                    r--;</span>
+<span class="nc" id="L422">                    this.lifecount -= 1;</span>
+<span class="nc" id="L423">                    clearMap();</span>
+<span class="nc" id="L424">                    setup();</span>
+                }
+            } 
+        }
+        //draw player
+<span class="fc" id="L429">        this.player.draw(this);</span>
+        //game over
+<span class="pc bpc" id="L431" title="1 of 4 branches missed.">        if (this.clock.getTime() == 0 || this.lifecount == 0){</span>
+<span class="fc" id="L432">            clear();</span>
+<span class="fc" id="L433">            background(255, 165, 0);</span>
+<span class="fc" id="L434">            textFont(this.int_font);</span>
+<span class="fc" id="L435">            fill(0);</span>
+<span class="fc" id="L436">            text(&quot;GAME OVER&quot;,WIDTH/3, HEIGHT/2);</span>
+<span class="fc" id="L437">            noLoop();</span>
+        }
+        //find goal
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">        if (checkNextLevel()){</span>
+<span class="nc" id="L441">            this.whichlevel +=1;</span>
+<span class="nc bnc" id="L442" title="All 2 branches missed.">            if (this.whichlevel &lt; this.levels){</span>
+<span class="nc" id="L443">                clearMap();</span>
+<span class="nc" id="L444">                setup();</span>
+            } 
+        }
+        //you win
+<span class="fc bfc" id="L448" title="All 2 branches covered.">        if (checkWin()){</span>
+<span class="fc" id="L449">            clear();</span>
+<span class="fc" id="L450">            background(255, 165, 0);</span>
+<span class="fc" id="L451">            textFont(this.int_font);</span>
+<span class="fc" id="L452">            fill(0);</span>
+<span class="fc" id="L453">            text(&quot;YOU WIN&quot;,WIDTH*2/5, HEIGHT/2);</span>
+<span class="fc" id="L454">            noLoop();</span>
+        } 
+        
+<span class="fc" id="L457">    }</span>
+       /**
+* Check if player wins, if not win return false;
+* @return boolean 
+*/
+    public boolean checkWin(){
+<span class="pc bpc" id="L463" title="1 of 4 branches missed.">        if (this.player.findgoal()==true &amp;&amp; this.whichlevel == this.levels){</span>
+<span class="fc" id="L464">            return true;</span>
+        }
+        else {
+<span class="fc" id="L467">            return false;</span>
+        }
+    }
+       /**
+* Check if player reaches the next level
+* @return boolean 
+*/
+    public boolean checkNextLevel(){
+<span class="pc bpc" id="L475" title="1 of 4 branches missed.">        if (this.player.findgoal() &amp;&amp; this.whichlevel &lt; this.levels){</span>
+<span class="nc" id="L476">            return true;</span>
+        }
+        else {
+<span class="fc" id="L479">            return false;</span>
+        }
+    }
+   /**
+* Clear all drawings on map
+*/
+    public void clearMap(){
+<span class="fc" id="L486">        this.red_Enemies.clear();</span>
+<span class="fc" id="L487">        this.yellow_Enemies.clear();</span>
+<span class="fc" id="L488">        this.bomb_list.clear();</span>
+<span class="fc" id="L489">        this.explode_list.clear();</span>
+<span class="fc" id="L490">        this.exp_timing.clear();</span>
+<span class="fc" id="L491">        this.bomb_timing.clear();</span>
+<span class="fc" id="L492">    }</span>
+   /**
+* Check key pressed, if LEFT then player moves to the left for one column, if UP then player moves up for one row etc.
+*/
+    public void keyPressed(){
+<span class="fc bfc" id="L497" title="All 2 branches covered.">        if (keyCode == LEFT){</span>
+<span class="fc" id="L498">            this.player.moveleft();</span>
+        }
+<span class="fc bfc" id="L500" title="All 2 branches covered.">        else if (keyCode == RIGHT){</span>
+<span class="fc" id="L501">            this.player.moveright();</span>
+        }
+<span class="fc bfc" id="L503" title="All 2 branches covered.">        else if (keyCode == UP){</span>
+<span class="fc" id="L504">            this.player.moveup();</span>
+        }
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        else if (keyCode == DOWN){</span>
+<span class="fc" id="L507">            this.player.movedown();</span>
+        }
+<span class="pc bpc" id="L509" title="1 of 2 branches missed.">        else if (keyCode == SPACE){</span>
+<span class="fc" id="L510">            this.bomb_timing.add(frameCount);</span>
+<span class="fc" id="L511">            this.exp_timing.add(frameCount+120);</span>
+<span class="fc" id="L512">            bomb_list.add(new Bomb(this.mapTable,this.player.getX(),this.player.getY(),this.bombs,this.initial));</span>
+<span class="fc" id="L513">            explode_list.add(new Explode(this.mapTable, this.player.getX(), this.player.getY(), this.explodes, this.initial));</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">            for (int i = 0; i &lt; explode_list.size(); i++){</span>
+<span class="fc" id="L515">                this.explode_list.get(i).checkExplodeSpace();</span>
+                
+            }
+        }
+<span class="fc" id="L519">    }</span>
+       /**
+* Main method that runs the program
+* @param args default args
+*/
+    public static void main(String[] args) {
+<span class="nc" id="L525">        PApplet.main(&quot;demolition.App&quot;);</span>
+<span class="nc" id="L526">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

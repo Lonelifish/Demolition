@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bomb.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Bomb.java</span></div><h1>Bomb.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PImage;
+import processing.core.PApplet; 
+
+public class Bomb {
+	private int x;
+	private int y;
+
+	private String[][] mapTable;
+/**
+* Bomb sprite
+*/
+	public PImage sprite;
+	private PImage[] bombs;
+	private int initial;
+	private int tick;
+/**
+* Default width
+*/
+	public static final int WIDTH = 480;
+/**
+* Default height
+*/
+    public static final int HEIGHT = 480;
+/**
+* Construct a bomb object.
+* @param mapTable 2D array for the map.
+* @param x Column number of the bomb.
+* @param y Row number of the bomb.
+* @param bombs Array of sprites for bomb.
+* @param initial Initial number used by tick() method, default value is zero.
+*/	
+<span class="fc" id="L34">	public Bomb(String[][] mapTable, int x, int y, PImage[] bombs, int initial){</span>
+<span class="fc" id="L35">		this.mapTable = mapTable;</span>
+<span class="fc" id="L36">		this.bombs = bombs;</span>
+<span class="fc" id="L37">		this.x = x;</span>
+<span class="fc" id="L38">		this.y = y;</span>
+<span class="fc" id="L39">		this.initial = initial;</span>
+<span class="fc" id="L40">		this.sprite = this.bombs[this.initial];</span>
+<span class="fc" id="L41">		this.tick = 1;</span>
+<span class="fc" id="L42">	}</span>
+/**
+* Method to form bomb animation, loops through the bomb sprite array.
+*/
+	public void tick(){
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (this.initial &lt; this.bombs.length-1){</span>
+<span class="fc" id="L48">			this.initial += this.tick;</span>
+<span class="fc" id="L49">			this.sprite = this.bombs[this.initial];</span>
+		}
+<span class="fc" id="L51">	}</span>
+/**
+* Draw bomb object on map.
+* @param app the main PApplet object.
+*/
+	public void draw(PApplet app) {
+<span class="fc" id="L57">		app.image(this.sprite, this.y*(WIDTH/mapTable.length),(64+this.x *((HEIGHT-64)/mapTable[this.x].length)));</span>
+<span class="fc" id="L58">   	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
